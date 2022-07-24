@@ -33,6 +33,7 @@ namespace SpaceEngineers.UWBlockPrograms.BatteryMonitor
         {
             IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("Log") as IMyTextPanel;
             oScreen.SetValue<Int64>("Content", 1);
+            // Blue bg color = 0, 136, 190
             oScreen.SetValue<Color>("FontColor", new Color(100, 100, 100));
 
             return oScreen;
