@@ -1,6 +1,6 @@
 public void Main(string argument, UpdateType updateSource)
 {
-    IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("[Battery Status LCD]") as IMyTextPanel;
+    IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("Colors") as IMyTextPanel;
 
     string sRainbow = ""; // Grays
     sRainbow += "";
