@@ -1,3 +1,8 @@
+public Program()
+{
+    Runtime.UpdateFrequency = UpdateFrequency.Update10;
+}
+
 public class SEFix
 {
     public static T[] arr<T>(params T[] arg)
@@ -29,6 +34,13 @@ public class ColorUtils
         SEFix.arr( 0, 0, 0)
     };
     private static string[] colorStrings = new string[] {
+        // "", //oh but it works fine with *strings* -_-
+        // "", //red
+        // "", //yellow
+        // "", //green
+        // "", //white
+        // "", //gray
+        // "" //black
         "\uE004", //oh but it works fine with *strings* -_-
         "\uE003", //red
         "\uE002", //yellow
