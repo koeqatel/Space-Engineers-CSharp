@@ -24,15 +24,18 @@ namespace SpaceEngineers.UWBlockPrograms.BatteryMonitor
         // Your code goes between the next #endregion and #region
         #endregion
 
+        public Program()
+        {
+            Runtime.UpdateFrequency = UpdateFrequency.Update1;
+        }
         public void Main(string args)
         {
-            Vector3D vCoords = Me.GetPosition();
-            string sCoords = "(" + Math.Round(vCoords.X, 3) + ", " + Math.Round(vCoords.Y, 3) + ", " + Math.Round(vCoords.Z, 3) + ")";
-
             IMyCockpit oFlightSeat = GridTerminalSystem.GetBlockWithName("Cockpit: Flight Seat") as IMyCockpit;
 
-            IMyTextSurface oFlightSeatScreen = oFlightSeat.GetSurface(0);
+            Vector3D vCoords = oFlightSeat.GetPosition();
+            string sCoords = "(" + Math.Round(vCoords.X, 3) + ", " + Math.Round(vCoords.Y, 3) + ", " + Math.Round(vCoords.Z, 3) + ")";
 
+            IMyTextSurface oFlightSeatScreen = oFlightSeat.GetSurface(0);
             oFlightSeatScreen.WriteText(sCoords);
         }
 
