@@ -208,8 +208,6 @@ void Main(string argument)
         oOxyMap.Alignment = TextAlignment.CENTER;
         oOxyMap.TextPadding = 0;
 
-        this.Log(oOxyMap);
-
         //LCD fontsize = 0.158, ration = 20:11
         graphics = new Graphics(236, 119, (IMyTextPanel)oOxyMap);
     }
