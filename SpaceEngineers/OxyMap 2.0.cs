@@ -3,27 +3,6 @@ public Program()
     Runtime.UpdateFrequency = UpdateFrequency.Update10;
 }
 
-public class Colors
-{
-    //non-monospace fonts ugh
-    public static string Red = "";
-    public static string RedDark = "";
-    public static string RedDarker = "";
-    public static string RedDarkest = "";
-    public static string Orange = "";
-    public static string Yellow = "";
-    public static string YellowGreen = "";
-    public static string Green = "";
-    public static string GreenDark = "";
-    public static string GreenDarker = "";
-    public static string GreenDarkest = "";
-    public static string Cyan = "";
-    public static string DarkCyan = "";
-    public static string Black = "";
-    public static string LightGray = "";
-    public static string Gray = "";
-    public static string White = "";
-}
 public class Graphics
 {
     public int width;
@@ -38,8 +17,8 @@ public class Graphics
         width = w;
         height = h;
         console = c;
-        fg = Colors.Red;
-        bg = Colors.Gray;
+        fg = GetColorToChar(new Color(255,0,0));
+        bg = GetColorToChar(new Color(100,100,100));
         screen = new string[height * width];
         clear();
     }
@@ -212,11 +191,11 @@ void Main(string argument)
         graphics = new Graphics(236, 119, (IMyTextPanel)oOxyMap);
     }
     counter++;
-    graphics.bg = Colors.Black;
+    graphics.bg = GetColorToChar(new Color(0,0,0));
     graphics.clear();
 
-    this.PaintRoom("Cargo", 80, 55, 5, 7);
-    this.PaintRoom("Cockpit", 70, 55, 12, 7);
+    this.PaintRoom("Essentials", 75, 55, 7, 5);
+    this.PaintRoom("Cockpit", 70, 55, 4, 5);
 
     graphics.paint();
 }
@@ -232,18 +211,18 @@ void PaintRoom(string name, int x, int y, int w, int h)
         {
             if (ListVents[i].GetOxygenLevel() == 0)
             {
-                graphics.fg = Colors.Red;
+                graphics.fg = GetColorToChar(new Color(255,0,0));
                 CloseDoors(name);
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else if (ListVents[i].GetOxygenLevel() == 1)
             {
-                graphics.fg = Colors.Green;
+                graphics.fg = GetColorToChar(new Color(0,255,0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else
             {
-                graphics.fg = Colors.Yellow;
+                graphics.fg = GetColorToChar(new Color(255,255,0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
 
@@ -252,8 +231,8 @@ void PaintRoom(string name, int x, int y, int w, int h)
     }
 
     graphics.rect("fill", x, y, w, h);
-    graphics.fg = Colors.Gray;
-    graphics.rect("line", x, y, w, h);
+    graphics.fg = GetColorToChar(new Color(50,50,50));
+    graphics.rect("line", x - 1, y - 1, w + 2, h + 2);
 }
 
 void CloseDoors(string name)
@@ -370,4 +349,26 @@ void Log(IMyTerminalBlock aMessage)
         sProperties += aProperties[i].Id + Environment.NewLine;
 
     oScreen.WriteText(sActions + Environment.NewLine + sProperties);
+}
+
+const double bitSpacing = 255.0 / 7.0;
+static Color GetClosestColor(Color pixelColor)
+{
+    int R, G, B;
+    R = (int)(Math.Round(pixelColor.R / bitSpacing) * bitSpacing);
+    G = (int)(Math.Round(pixelColor.G / bitSpacing) * bitSpacing);
+    B = (int)(Math.Round(pixelColor.B / bitSpacing) * bitSpacing);
+
+    return new Color(R, G, B);
+}
+
+static char ColorToChar(byte r, byte g, byte b)
+{
+    return (char)(0xe100 + ((int)Math.Round(r / bitSpacing) << 6) + ((int)Math.Round(g / bitSpacing) << 3) + (int)Math.Round(b / bitSpacing));
+}
+
+public static string GetColorToChar(Color pixelColor)
+{
+    Color oColor = GetClosestColor(pixelColor);
+    return ColorToChar(oColor.R, oColor.G, oColor.B).ToString();
 }
