@@ -1,54 +1,40 @@
 public void Main(string argument, UpdateType updateSource)
 {
-    IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("Colors") as IMyTextPanel;
+    IMyTextPanel oScreen = PreparePanel();
+    oScreen.WriteText(GetColorChar(new Color(255, 0, 0)));
+}
 
-    string sRainbow = ""; // Grays
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
+IMyTextPanel PreparePanel()
+{
+    IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("Programmers Bay: LCD Colors") as IMyTextPanel;
 
-    sRainbow += Environment.NewLine; // Reds
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
+    oScreen.SetValue<Int64>("Content", 1);
+    // Blue bg color = 0, 136, 190
+    oScreen.FontColor = new Color(255, 255, 255);
+    oScreen.Font = "Monospace";
+    oScreen.TextPadding = 0;
 
-    sRainbow += Environment.NewLine; // Yellows
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
+    return oScreen;
+}
 
-    sRainbow += Environment.NewLine; // Greens
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
+const double bitSpacing = 255.0 / 7.0;
+static Color GetClosestColor(Color pixelColor)
+{
+    int R, G, B;
+    R = (int)(Math.Round(pixelColor.R / bitSpacing) * bitSpacing);
+    G = (int)(Math.Round(pixelColor.G / bitSpacing) * bitSpacing);
+    B = (int)(Math.Round(pixelColor.B / bitSpacing) * bitSpacing);
 
-    sRainbow += Environment.NewLine; // Cyans
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
-    sRainbow += "";
+    return new Color(R, G, B);
+}
 
+static char ColorToChar(byte r, byte g, byte b)
+{
+    return (char)(0xe100 + ((int)Math.Round(r / bitSpacing) << 6) + ((int)Math.Round(g / bitSpacing) << 3) + (int)Math.Round(b / bitSpacing));
+}
 
-    sRainbow += Environment.NewLine; // Clean
-    sRainbow += "";
-
-
-    sRainbow += Environment.NewLine;
-
-    oScreen.WriteText(sRainbow);
+public static string GetColorChar(Color pixelColor)
+{
+    Color oColor = GetClosestColor(pixelColor);
+    return ColorToChar(oColor.R, oColor.G, oColor.B).ToString();
 }
