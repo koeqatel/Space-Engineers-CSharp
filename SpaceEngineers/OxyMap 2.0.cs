@@ -17,8 +17,8 @@ public class Graphics
         width = w;
         height = h;
         console = c;
-        fg = GetColorToChar(new Color(255,0,0));
-        bg = GetColorToChar(new Color(100,100,100));
+        fg = GetColorChar(new Color(255,0,0));
+        bg = GetColorChar(new Color(100,100,100));
         screen = new string[height * width];
         clear();
     }
@@ -191,7 +191,7 @@ void Main(string argument)
         graphics = new Graphics(236, 119, (IMyTextPanel)oOxyMap);
     }
     counter++;
-    graphics.bg = GetColorToChar(new Color(0,0,0));
+    graphics.bg = GetColorChar(new Color(0,0,0));
     graphics.clear();
 
     this.PaintRoom("Essentials", 75, 55, 7, 5);
@@ -211,18 +211,18 @@ void PaintRoom(string name, int x, int y, int w, int h)
         {
             if (ListVents[i].GetOxygenLevel() == 0)
             {
-                graphics.fg = GetColorToChar(new Color(255,0,0));
+                graphics.fg = GetColorChar(new Color(255,0,0));
                 CloseDoors(name);
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else if (ListVents[i].GetOxygenLevel() == 1)
             {
-                graphics.fg = GetColorToChar(new Color(0,255,0));
+                graphics.fg = GetColorChar(new Color(0,255,0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else
             {
-                graphics.fg = GetColorToChar(new Color(255,255,0));
+                graphics.fg = GetColorChar(new Color(255,255,0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
 
@@ -231,7 +231,7 @@ void PaintRoom(string name, int x, int y, int w, int h)
     }
 
     graphics.rect("fill", x, y, w, h);
-    graphics.fg = GetColorToChar(new Color(50,50,50));
+    graphics.fg = GetColorChar(new Color(50,50,50));
     graphics.rect("line", x - 1, y - 1, w + 2, h + 2);
 }
 
@@ -367,7 +367,7 @@ static char ColorToChar(byte r, byte g, byte b)
     return (char)(0xe100 + ((int)Math.Round(r / bitSpacing) << 6) + ((int)Math.Round(g / bitSpacing) << 3) + (int)Math.Round(b / bitSpacing));
 }
 
-public static string GetColorToChar(Color pixelColor)
+public static string GetColorChar(Color pixelColor)
 {
     Color oColor = GetClosestColor(pixelColor);
     return ColorToChar(oColor.R, oColor.G, oColor.B).ToString();
