@@ -17,8 +17,8 @@ public class Graphics
         width = w;
         height = h;
         console = c;
-        fg = GetColorChar(new Color(255,0,0));
-        bg = GetColorChar(new Color(100,100,100));
+        fg = GetColorChar(new Color(255, 0, 0));
+        bg = GetColorChar(new Color(100, 100, 100));
         screen = new string[height * width];
         clear();
     }
@@ -160,6 +160,55 @@ public class Graphics
             }
         }
     }
+    public void poly(string sM, Vector2[] aPoints)
+    {
+        List<float> aX = new List<float>();
+        List<float> aY = new List<float>();
+
+        foreach (Vector2 point in aPoints)
+        {
+            aX.Add(point.X);
+            aY.Add(point.Y);
+        }
+
+        graphics.fg = GetColorChar(new Color(0, 255, 0));
+        rect("fill", Min(aX), Min(aY), Max(aX) - Min(aX) + 1, Max(aY) - Min(aY) + 1);
+
+        Vector2 vPrevPoint = new Vector2(0, 0);
+        // foreach (Vector2 point in aPoints)
+        // {
+        //     aX.Add(point.X);
+        //     aY.Add(point.Y);
+        // }
+
+        //pt2.X - pt1.X
+        //pt2.Y - pt1.Y
+    }
+
+    public int Min(List<float> aList)
+    {
+        float iMin = Int32.MaxValue;
+        foreach (float item in aList)
+        {
+            if (item > iMin) continue;
+            iMin = item;
+        }
+
+        return (int)iMin;
+    }
+
+    public int Max(List<float> aList)
+    {
+        float iMax = 0;
+        foreach (float item in aList)
+        {
+            if (item < iMax) continue;
+            iMax = item;
+        }
+
+        return (int)iMax;
+    }
+
     public void print(int x, int y, string s)
     { //this doesn't really do anything
         for (int i = 0; i < s.Length; i++)
@@ -183,15 +232,15 @@ void Main(string argument)
         // Blue bg color = 0, 136, 190
         oOxyMap.FontColor = new Color(255, 255, 255);
         oOxyMap.Font = "Monospace";
-        oOxyMap.FontSize = (float) 0.15;
-        oOxyMap.Alignment = TextAlignment.CENTER;
+        oOxyMap.FontSize = (float)0.15;
+        oOxyMap.Alignment = TextAlignment.LEFT;
         oOxyMap.TextPadding = 0;
 
         //LCD fontsize = 0.158, ration = 20:11
         graphics = new Graphics(236, 119, (IMyTextPanel)oOxyMap);
     }
     counter++;
-    graphics.bg = GetColorChar(new Color(0,0,0));
+    graphics.bg = GetColorChar(new Color(0, 0, 0));
     graphics.clear();
 
     this.PaintRoom("Essentials", 75, 55, 7, 5);
@@ -211,28 +260,54 @@ void PaintRoom(string name, int x, int y, int w, int h)
         {
             if (ListVents[i].GetOxygenLevel() == 0)
             {
-                graphics.fg = GetColorChar(new Color(255,0,0));
+                graphics.fg = GetColorChar(new Color(255, 0, 0));
                 CloseDoors(name);
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else if (ListVents[i].GetOxygenLevel() == 1)
             {
-                graphics.fg = GetColorChar(new Color(0,255,0));
+                graphics.fg = GetColorChar(new Color(0, 255, 0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
             else
             {
-                graphics.fg = GetColorChar(new Color(255,255,0));
+                graphics.fg = GetColorChar(new Color(255, 255, 0));
                 Lights(name, ListVents[i].GetOxygenLevel());
             }
 
             //ShowStrips(name, ListVents[i].GetOxygenLevel());
         }
     }
+    // graphics.rect("fill", x, y, w, h);
+    // graphics.fg = GetColorChar(new Color(50,50,50));
+    // graphics.rect("line", x - 1, y - 1, w + 2, h + 2);
 
-    graphics.rect("fill", x, y, w, h);
-    graphics.fg = GetColorChar(new Color(50,50,50));
-    graphics.rect("line", x - 1, y - 1, w + 2, h + 2);
+
+
+
+    //  Create points that define polygon.
+    Vector2 point1 = new Vector2(10, 10);
+    Vector2 point2 = new Vector2(20, 10);
+    Vector2 point3 = new Vector2(20, 20);
+    Vector2 point4 = new Vector2(10, 20);
+    Vector2[] curvePoints =
+             {
+                 point1,
+                 point2,
+                 point3,
+                 point4
+             };
+
+    graphics.poly("fill", curvePoints);
+
+    graphics.fg = GetColorChar(new Color(255, 0, 0));
+    graphics.pixel((int)point1.X, (int)point1.Y);
+    graphics.pixel((int)point2.X, (int)point2.Y);
+    graphics.pixel((int)point3.X, (int)point3.Y);
+    graphics.pixel((int)point4.X, (int)point4.Y);
+
+
+
 }
 
 void CloseDoors(string name)
