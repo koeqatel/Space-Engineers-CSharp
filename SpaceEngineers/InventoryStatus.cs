@@ -2,71 +2,108 @@ public Program()
 {
     Runtime.UpdateFrequency = UpdateFrequency.Update10;
 }
+
 public void Main(string argument, UpdateType updateSource)
 {
     double dTotalVolume = 0;
     double dTotalMaxVolume = 0;
 
     var aCargoList = new List<IMyTerminalBlock>();
-    GridTerminalSystem.GetBlocksOfType<IMyCargoContainer>(aCargoList);
+    GridTerminalSystem.GetBlocksOfType<IMyTerminalBlock>(aCargoList);
 
-    foreach (IMyCargoContainer oCargoContainer in aCargoList)
+    foreach (IMyTerminalBlock oCargoContainer in aCargoList)
     {
-        IMyInventory oCurrentInventory = oCargoContainer.GetInventory();
-        dTotalVolume += (double)oCurrentInventory.CurrentVolume.RawValue;
-        dTotalMaxVolume += (double)oCurrentInventory.MaxVolume.RawValue;
-    }
+        IMyEntity oCargoContainerEntity = oCargoContainer as IMyEntity;
 
-    var aDrillList = new List<IMyTerminalBlock>();
-    GridTerminalSystem.GetBlocksOfType<IMyShipDrill>(aDrillList);
+        if (!oCargoContainerEntity.HasInventory)
+            continue;
 
-    foreach (IMyShipDrill oDrill in aDrillList)
-    {
-        IMyInventory oCurrentInventory = oDrill.GetInventory();
-        dTotalVolume += (double)oCurrentInventory.CurrentVolume.RawValue;
-        dTotalMaxVolume += (double)oCurrentInventory.MaxVolume.RawValue;
-    }
+        if (Me.CubeGrid != oCargoContainer.CubeGrid)
+            continue;
 
-    var aCockpitList = new List<IMyTerminalBlock>();
-    GridTerminalSystem.GetBlocksOfType<IMyCockpit>(aCockpitList);
+        try
+        {
+            string park = oCargoContainer.GetActionWithName("Park").ToString();
+            continue;
+        }
+        catch
+        {
 
-    foreach (IMyCockpit oCockpit in aCockpitList)
-    {
-        IMyInventory oCurrentInventory = oCockpit.GetInventory();
-        dTotalVolume += (double)oCurrentInventory.CurrentVolume.RawValue;
-        dTotalMaxVolume += (double)oCurrentInventory.MaxVolume.RawValue;
-    }
+        }
 
-    var aConnectorList = new List<IMyTerminalBlock>();
-    GridTerminalSystem.GetBlocksOfType<IMyShipConnector>(aConnectorList);
-
-    foreach (IMyShipConnector oConnector in aConnectorList)
-    {
-        IMyInventory oCurrentInventory = oConnector.GetInventory();
+        IMyInventory oCurrentInventory = oCargoContainerEntity.GetInventory();
         dTotalVolume += (double)oCurrentInventory.CurrentVolume.RawValue;
         dTotalMaxVolume += (double)oCurrentInventory.MaxVolume.RawValue;
     }
 
     double dVolumePercentage = dTotalVolume / dTotalMaxVolume * 100.0;
 
-    if (dVolumePercentage > (double) 0)
+    IMyReflectorLight oSpotlight = GridTerminalSystem.GetBlockWithName("BumbleCat: Spotlight") as IMyReflectorLight;
+
+    IMyTextPanel oScreen = PreparePanel();
+    oSpotlight.Color = new Color(255, 255, 255);
+    oScreen.WriteText(Math.Round(dVolumePercentage, 1).ToString());
+
+    if (dVolumePercentage > (double)99) //if full
     {
-        IMyTextPanel oScreen = PreparePanel();
-        oScreen.WriteText(Math.Round(dVolumePercentage, 1).ToString());
-    }
-    else if (dVolumePercentage == (double) 100)
-    {
-        // IMyReflectorLight oSpotlight = GridTerminalSystem.GetBlockWithName("BumbleCat: Spotlight") as IMyReflectorLight;
-        //TODO: Make me red
-        IMyTextPanel oScreen = PreparePanel();
         oScreen.FontColor = new Color(255, 0, 0);
-        oScreen.WriteText(Math.Round(dVolumePercentage, 1).ToString());
+
+        oSpotlight.Color = new Color(255, 0, 0);
     }
-    else
+    else if (dVolumePercentage > (double)75)
+        oScreen.FontColor = new Color(200, 150, 0);
+
+    else if (dVolumePercentage > (double)50)
+        oScreen.FontColor = new Color(232, 179, 35);
+
+    else if (dVolumePercentage > (double)0)
+        oScreen.FontColor = new Color(0, 200, 0);
+
+    else // if empty
     {
-        IMyTextPanel oScreen = PrepareLogo();
+        oScreen = PrepareLogo();
         oScreen.WriteText(getCatLogo());
+
+        oSpotlight.Color = new Color(255, 255, 255);
     }
+}
+
+void Log(string sMessage)
+{
+    IMyTextPanel oScreen = PreparePanel();
+
+    List<string> aOldText = oScreen.GetText().Split('\n').ToList();
+
+    if (aOldText.Count >= 17)
+        aOldText.RemoveAt(0);
+
+    string sNewText = String.Join(Environment.NewLine, aOldText.ToArray()) + Environment.NewLine + DateTime.Now.ToString("H:mm:ss") + ": " + sMessage;
+    oScreen.WriteText(sNewText);
+}
+
+void Log(IMyTerminalBlock aMessage)
+{
+    IMyTextPanel oScreen = PreparePanel();
+
+    //Get Actions
+    List<ITerminalAction> aActions = new List<ITerminalAction>();
+    aMessage.GetActions(aActions);
+
+    string sActions = "Actions: " + Environment.NewLine;
+
+    for (int i = 0; i < aActions.Count; i++)
+        sActions += aActions[i].Name + Environment.NewLine;
+
+    //Get Properties
+    List<ITerminalProperty> aProperties = new List<ITerminalProperty>();
+    aMessage.GetProperties(aProperties);
+
+    string sProperties = "Properties: " + Environment.NewLine;
+
+    for (int i = 0; i < aProperties.Count; i++)
+        sProperties += aProperties[i].Id + Environment.NewLine;
+
+    oScreen.WriteText(sActions + Environment.NewLine + sProperties);
 }
 
 IMyTextPanel PreparePanel()
