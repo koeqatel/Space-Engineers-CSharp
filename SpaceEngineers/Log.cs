@@ -1,6 +1,6 @@
 public void Main(string argument, UpdateType updateSource)
 {
-    IMyTerminalBlock oSeat = GridTerminalSystem.GetBlockWithName("Cockpit: Flight Seat") as IMyCockpit;
+    IMyTerminalBlock oSeat = GridTerminalSystem.GetBlockWithName("Cockpit: Control Seat") as IMyCockpit;
     this.Log(oSeat);
 }
 
