@@ -22,7 +22,7 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-
+        int cockpitIndex = 1;
         public Program()
         {
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
@@ -30,7 +30,7 @@ namespace IngameScript
 
         public void Main(string argument, UpdateType updateSource)
         {
-            IMyCockpit cockpit = GridTerminalSystem.GetBlockWithName("BumbleCat: Cockpit") as IMyCockpit;
+            IMyCockpit cockpit = GridTerminalSystem.GetBlockWithName("Industrial Cockpit") as IMyCockpit;
 
             double dTotalVolume = 0;
             double dTotalMaxVolume = 0;
@@ -65,129 +65,97 @@ namespace IngameScript
 
             double dVolumePercentage = dTotalVolume / dTotalMaxVolume * 100.0;
 
-            IMyReflectorLight oSpotlight = GridTerminalSystem.GetBlockWithName("BumbleCat: Spotlight") as IMyReflectorLight;
-
-            IMyTextPanel oScreen = PreparePanel(cockpit);
-            oSpotlight.Color = new Color(255, 255, 255);
-            oScreen.WriteText(Math.Round(dVolumePercentage, 1).ToString());
-            cockpit.GetSurface(0).WriteText(Math.Round(dVolumePercentage, 1).ToString());
+            IMyTextSurface givenScreen = PreparePanel(cockpit);
+            givenScreen.WriteText(Math.Round(dVolumePercentage, 1).ToString());
+            cockpit.GetSurface(cockpitIndex).WriteText(Math.Round(dVolumePercentage, 1).ToString());
 
             if (dVolumePercentage > (double)95) //if full
             {
-                oScreen.FontColor = new Color(255, 0, 0);
-                cockpit.GetSurface(0).FontColor = new Color(255, 0, 0);
-
-                oSpotlight.Color = new Color(255, 0, 0);
+                givenScreen.FontColor = new Color(255, 0, 0);
+                cockpit.GetSurface(cockpitIndex).FontColor = new Color(255, 0, 0);
             }
             else if (dVolumePercentage > (double)75)
             {
-                cockpit.GetSurface(0).FontColor = new Color(200, 150, 0);
-                oScreen.FontColor = new Color(200, 150, 0);
+                cockpit.GetSurface(cockpitIndex).FontColor = new Color(200, 150, 0);
+                givenScreen.FontColor = new Color(200, 150, 0);
             }
             else if (dVolumePercentage > (double)50)
             {
-                cockpit.GetSurface(0).FontColor = new Color(232, 179, 35);
-                oScreen.FontColor = new Color(232, 179, 35);
+                cockpit.GetSurface(cockpitIndex).FontColor = new Color(232, 179, 35);
+                givenScreen.FontColor = new Color(232, 179, 35);
             }
             else if (dVolumePercentage > (double)0)
             {
-                cockpit.GetSurface(0).FontColor = new Color(0, 200, 0);
-                oScreen.FontColor = new Color(0, 200, 0);
+                cockpit.GetSurface(cockpitIndex).FontColor = new Color(0, 200, 0);
+                givenScreen.FontColor = new Color(0, 200, 0);
             }
 
             else // if empty
             {
-                oScreen = PrepareLogo(cockpit);
-                cockpit.GetSurface(0).WriteText(getCatLogo());
-                oScreen.WriteText(getCatLogo());
-
-                oSpotlight.Color = new Color(255, 255, 255);
+                givenScreen = PrepareLogo(cockpit);
+                cockpit.GetSurface(cockpitIndex).WriteText(getCatLogo());
+                givenScreen.WriteText(getCatLogo());
             }
         }
 
-        void Log(string sMessage)
+        IMyTextSurface PreparePanel(IMyCockpit cockpit = null)
         {
-            IMyTextPanel oScreen = PreparePanel();
+            IMyTextSurface terminalScreen = (GridTerminalSystem.GetBlockWithName("Inventory Status Logic") as IMyTextSurfaceProvider).GetSurface(0);
+            IMyTextSurface cockpitScreen = cockpit.GetSurface(cockpitIndex);
 
-            List<string> aOldText = oScreen.GetText().Split('\n').ToList();
 
-            if (aOldText.Count >= 17)
-                aOldText.RemoveAt(0);
 
-            string sNewText = String.Join(Environment.NewLine, aOldText.ToArray()) + Environment.NewLine + DateTime.Now.ToString("H:mm:ss") + ": " + sMessage;
-            oScreen.WriteText(sNewText);
-        }
-
-        void Log(IMyTerminalBlock aMessage)
-        {
-            IMyTextPanel oScreen = PreparePanel();
-
-            //Get Actions
-            List<ITerminalAction> aActions = new List<ITerminalAction>();
-            aMessage.GetActions(aActions);
-
-            string sActions = "Actions: " + Environment.NewLine;
-
-            for (int i = 0; i < aActions.Count; i++)
-                sActions += aActions[i].Name + Environment.NewLine;
-
-            //Get Properties
-            List<ITerminalProperty> aProperties = new List<ITerminalProperty>();
-            aMessage.GetProperties(aProperties);
-
-            string sProperties = "Properties: " + Environment.NewLine;
-
-            for (int i = 0; i < aProperties.Count; i++)
-                sProperties += aProperties[i].Id + Environment.NewLine;
-
-            oScreen.WriteText(sActions + Environment.NewLine + sProperties);
-        }
-
-        IMyTextPanel PreparePanel(IMyCockpit cockpit = null)
-        {
-            IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("BumbleCat: Cat Logo") as IMyTextPanel;
+            if (terminalScreen != null)
+            {
+                //terminalScreen.SetValue<Int64>("Content", 1);
+                terminalScreen.ContentType = ContentType.TEXT_AND_IMAGE;
+                // Blue bg color = 0, 136, 190
+                terminalScreen.FontColor = new Color(232, 179, 35);
+                terminalScreen.Font = "Monospace";
+                terminalScreen.FontSize = (float)6;
+                terminalScreen.Alignment = TextAlignment.CENTER;
+                terminalScreen.TextPadding = 26;
+            }
             if (cockpit != null)
             {
-                cockpit.GetSurface(0).ContentType = ContentType.TEXT_AND_IMAGE;
+                cockpitScreen.ContentType = ContentType.TEXT_AND_IMAGE;
                 // Blue bg color = 0, 136, 190
-                cockpit.GetSurface(0).FontColor = new Color(255, 255, 255);
-                cockpit.GetSurface(0).Font = "Monospace";
-                cockpit.GetSurface(0).FontSize = (float)6;
-                cockpit.GetSurface(0).Alignment = TextAlignment.LEFT;
-                cockpit.GetSurface(0).TextPadding = 0;
+                cockpitScreen.FontColor = new Color(255, 255, 255);
+                cockpitScreen.Font = "Monospace";
+                cockpitScreen.FontSize = (float)6;
+                cockpitScreen.Alignment = TextAlignment.LEFT;
+                cockpitScreen.TextPadding = 0;
             }
-            oScreen.SetValue<Int64>("Content", 1);
-            // Blue bg color = 0, 136, 190
-            oScreen.FontColor = new Color(232, 179, 35);
-            oScreen.Font = "Monospace";
-            oScreen.FontSize = (float)6;
-            oScreen.Alignment = TextAlignment.CENTER;
-            oScreen.TextPadding = 26;
 
-            return oScreen;
+            return terminalScreen;
         }
 
-        IMyTextPanel PrepareLogo(IMyCockpit cockpit)
+        IMyTextSurface PrepareLogo(IMyCockpit cockpit)
         {
-            IMyTextPanel oScreen = GridTerminalSystem.GetBlockWithName("BumbleCat: Cat Logo") as IMyTextPanel;
+            IMyTextSurface terminalScreen = (GridTerminalSystem.GetBlockWithName("Inventory Status Logic") as IMyTextSurfaceProvider).GetSurface(0);
+            IMyTextSurface cockpitScreen = cockpit.GetSurface(cockpitIndex);
 
-            cockpit.GetSurface(0).ContentType = ContentType.TEXT_AND_IMAGE;
-            // Blue bg color = 0, 136, 190
-            cockpit.GetSurface(0).FontColor = new Color(255, 255, 255);
-            cockpit.GetSurface(0).Font = "Monospace";
-            cockpit.GetSurface(0).FontSize = (float)0.1;
-            cockpit.GetSurface(0).Alignment = TextAlignment.LEFT;
-            cockpit.GetSurface(0).TextPadding = 0;
-
-            oScreen.SetValue<Int64>("Content", 1);
-            // Blue bg color = 0, 136, 190
-            oScreen.FontColor = new Color(255, 255, 255);
-            oScreen.Font = "Monospace";
-            oScreen.FontSize = (float)0.1;
-            oScreen.Alignment = TextAlignment.LEFT;
-            oScreen.TextPadding = 0;
-
-            return oScreen;
+            if (terminalScreen != null)
+            {
+                terminalScreen.ContentType = ContentType.TEXT_AND_IMAGE;
+                // Blue bg color = 0, 136, 190
+                terminalScreen.FontColor = new Color(255, 255, 255);
+                terminalScreen.Font = "Monospace";
+                terminalScreen.FontSize = (float)0.1;
+                terminalScreen.Alignment = TextAlignment.LEFT;
+                terminalScreen.TextPadding = 0;
+            }
+            if (cockpit != null)
+            {
+                cockpitScreen.ContentType = ContentType.TEXT_AND_IMAGE;
+                // Blue bg color = 0, 136, 190
+                cockpitScreen.FontColor = new Color(255, 255, 255);
+                cockpitScreen.Font = "Monospace";
+                cockpitScreen.FontSize = (float)0.1;
+                cockpitScreen.Alignment = TextAlignment.LEFT;
+                cockpitScreen.TextPadding = 0;
+            }
+            return terminalScreen;
         }
 
         public string getCatLogo()
