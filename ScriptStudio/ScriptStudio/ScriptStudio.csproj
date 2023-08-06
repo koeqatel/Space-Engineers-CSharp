@@ -38,6 +38,13 @@
   <Import Project="MDK/MDK.options.props" />
   <Import Project="MDK/MDK.paths.props" Condition="exists('MDK/MDK.paths.props')" />
   <ItemGroup>
+    <Compile Include="MDK\Align 2.0 - Client.cs" />
+    <Compile Include="MDK\Align 2.0 - Server.cs" />
+    <Compile Include="MDK\Align Attachables.cs" />
+    <Compile Include="MDK\AutoDoors.cs" />
+    <Compile Include="MDK\Autopilot.cs" />
+    <Compile Include="MDK\BatteryShenanigans.cs" />
+    <Compile Include="MDK\BatteryStatusLightwolf.cs" />
     <Compile Include="MDK\Bootstrapper.cs" />
     <AdditionalFiles Include="MDK\MDK.options.props">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -45,6 +52,27 @@
     <AdditionalFiles Include="MDK\MDK.paths.props">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AdditionalFiles>
+    <Compile Include="MDK\CalibrateRotor.cs" />
+    <Compile Include="MDK\Colors.cs" />
+    <Compile Include="MDK\Coords.cs" />
+    <Compile Include="MDK\FindDoors.cs" />
+    <Compile Include="MDK\GraviThrust.cs" />
+    <Compile Include="MDK\InventoryStatus.cs" />
+    <Compile Include="MDK\InventoryStatusKarel.cs" />
+    <Compile Include="MDK\LocalMatrix.cs" />
+    <Compile Include="MDK\Log.cs" />
+    <Compile Include="MDK\OxyMap 2.0.cs" />
+    <Compile Include="MDK\Program.cs" />
+    <Compile Include="MDK\Progress Bar.cs" />
+    <Compile Include="MDK\ResetRotor.cs" />
+    <Compile Include="MDK\SendAndReceiveSignals.cs" />
+    <Compile Include="MDK\Ship Layout.cs" />
+    <Compile Include="MDK\starter-template.cs" />
+    <Compile Include="MDK\SunHinged 2.0.cs" />
+    <Compile Include="MDK\SunHinged.cs" />
+    <Compile Include="MDK\Telemetry.cs" />
+    <Compile Include="MDK\test.cs" />
+    <Compile Include="MDK\Thomas.cs" />
     <Compile Include="Program.cs" />
     <AdditionalFiles Include="Instructions.readme" />
     <AdditionalFiles Include="thumb.png" />
